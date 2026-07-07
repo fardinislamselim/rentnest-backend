@@ -1,12 +1,13 @@
 import { Router } from "express";
 
-import { authController } from "./auth.controller";
+import auth from "../../middlewares/auth";
 import { validate } from "../../middlewares/validate";
+import { authController } from "./auth.controller";
 import {
+  changePasswordValidationSchema,
   loginValidationSchema,
   registerValidationSchema,
 } from "./auth.validation";
-import auth from "../../middlewares/auth";
 
 const router = Router();
 
@@ -22,8 +23,17 @@ router.post(
   authController.loginUser,
 );
 
+router.post("/refresh-token", authController.refreshToken);
+
 router.get("/me", auth(), authController.getMe);
 
-router.post("/refresh-token", authController.refreshToken);
+router.post("/logout", authController.logoutUser);
+
+router.patch(
+  "/change-password",
+  auth(),
+  validate(changePasswordValidationSchema),
+  authController.changePassword,
+);
 
 export const AuthRoutes = router;

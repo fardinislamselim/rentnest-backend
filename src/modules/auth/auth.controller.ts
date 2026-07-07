@@ -76,10 +76,52 @@ const getMe = catchAsync(async (req, res) => {
   });
 });
 
+// logout user
+const logoutUser = catchAsync(async (_req, res) => {
+  res.clearCookie("accessToken", {
+    httpOnly: true,
+    secure: false,
+    sameSite: "none",
+  });
+
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: false,
+    sameSite: "none",
+  });
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "User logged out successfully",
+    data: null,
+  });
+});
+
+// change password
+const changePassword = catchAsync(async (req, res) => {
+  const currentPassword = req.body.currentPassword ?? req.body.oldPassword;
+  const newPassword = req.body.newPassword ?? req.body.password;
+
+  await authService.changePassword(
+    req.user.userId,
+    currentPassword,
+    newPassword,
+  );
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Password changed successfully",
+    data: null,
+  });
+});
 
 export const authController = {
   registerUser,
   loginUser,
   refreshToken,
   getMe,
+  logoutUser,
+  changePassword,
 };

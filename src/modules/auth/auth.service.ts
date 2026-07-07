@@ -163,10 +163,55 @@ const getMe = async (userId: string) => {
   return user;
 };
 
+// change password
+const changePassword = async (
+  userId: string,
+  currentPassword: string,
+  newPassword: string,
+) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  const isPasswordMatched = await bcrypt.compare(
+    currentPassword,
+    user.password,
+  );
+
+  if (!isPasswordMatched) {
+    throw new AppError(
+      httpStatus.UNAUTHORIZED,
+      "Current password is incorrect",
+    );
+  }
+
+  const hashedPassword = bcrypt.hashSync(
+    newPassword,
+    config.bcrypt_salt_rounds,
+  );
+
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      password: hashedPassword,
+    },
+  });
+
+  return null;
+};
 
 export const authService = {
   registerUser,
   loginUser,
   refreshToken,
   getMe,
+  changePassword,
 };
