@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "rootDir": "./src",
+    "rootDir": ".",
     "outDir": "./dist",
 
     "module": "ESNext",
@@ -21,6 +21,11 @@
     "resolveJsonModule": true
   },
 
-  "include": ["src/**/*"],
+  "include": [
+    "src/**/*",
+    "generated/**/*.ts",
+    "prisma.config.ts",
+    "prisma/**/*.ts"
+  ],
   "exclude": ["node_modules", "dist"]
 }

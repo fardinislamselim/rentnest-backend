@@ -1,3 +1,4 @@
+import { th } from "zod/locales";
 import app from "./app";
 import config from "./config";
 import { prisma } from "./lib/prisma";
