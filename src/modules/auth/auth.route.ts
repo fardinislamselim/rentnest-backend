@@ -6,6 +6,7 @@ import {
   loginValidationSchema,
   registerValidationSchema,
 } from "./auth.validation";
+import auth from "../../middlewares/auth";
 
 const router = Router();
 
@@ -20,6 +21,8 @@ router.post(
   validate(loginValidationSchema),
   authController.loginUser,
 );
+
+router.get("/me", auth(), authController.getMe);
 
 router.post("/refresh-token", authController.refreshToken);
 
