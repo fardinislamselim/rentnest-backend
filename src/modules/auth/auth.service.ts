@@ -1,11 +1,15 @@
 import bcrypt from "bcrypt";
 import httpStatus from "http-status";
+import { SignOptions } from "jsonwebtoken";
 
-import { prisma } from "../../lib/prisma";
-import AppError from "../../errors/AppError";
-import { IRegisterUser } from "./auth.interface";
+import { UserStatus } from "../../../generated/prisma/enums";
 import config from "../../config";
+import AppError from "../../errors/AppError";
+import { prisma } from "../../lib/prisma";
+import { createToken } from "../../utils/jwt";
+import { ILoginUser, IRegisterUser } from "./auth.interface";
 
+// register user
 const registerUser = async (payload: IRegisterUser) => {
   const isUserExists = await prisma.user.findUnique({
     where: {
@@ -46,6 +50,54 @@ const registerUser = async (payload: IRegisterUser) => {
   return result;
 };
 
-export const AuthService = {
+// login user
+const loginUser = async (payload: ILoginUser) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      email: payload.email,
+    },
+  });
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  if (user.status === UserStatus.BANNED) {
+    throw new AppError(httpStatus.FORBIDDEN, "Your account has been blocked");
+  }
+
+  const isPasswordMatched = await bcrypt.compare(
+    payload.password,
+    user.password,
+  );
+
+  if (!isPasswordMatched) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "Invalid credentials");
+  }
+
+  const jwtPayload = {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  };
+
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_access_secret as string,
+    { expiresIn: config.jwt_access_expires_in as string } as SignOptions,
+  );
+
+  const refreshToken = createToken(
+    jwtPayload,
+    config.jwt_refresh_secret as string,
+    { expiresIn: config.jwt_refresh_expires_in as string } as SignOptions,
+  );
+
+  return { accessToken, refreshToken };
+};
+
+export const authService = {
   registerUser,
+  loginUser,
 };
