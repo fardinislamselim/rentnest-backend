@@ -6,7 +6,7 @@ import { UserStatus } from "../../../generated/prisma/enums";
 import config from "../../config";
 import AppError from "../../errors/AppError";
 import { prisma } from "../../lib/prisma";
-import { createToken } from "../../utils/jwt";
+import { createToken, verifyToken } from "../../utils/jwt";
 import { ILoginUser, IRegisterUser } from "./auth.interface";
 
 // register user
@@ -97,7 +97,56 @@ const loginUser = async (payload: ILoginUser) => {
   return { accessToken, refreshToken };
 };
 
+// refresh token
+const refreshToken = async (token: string) => {
+  if (!token) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "Refresh token is required");
+  }
+
+  const decoded = verifyToken(token, config.jwt_refresh_secret);
+  const userId = decoded.userId ?? decoded.id;
+
+  if (!userId) {
+    throw new AppError(
+      httpStatus.UNAUTHORIZED,
+      "Invalid refresh token payload",
+    );
+  }
+
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId as string,
+    },
+  });
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  if (user.status === UserStatus.BANNED) {
+    throw new AppError(httpStatus.FORBIDDEN, "User is blocked");
+  }
+
+  const jwtPayload = {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  };
+
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_access_secret as string,
+    { expiresIn: config.jwt_access_expires_in as string } as SignOptions,
+  );
+
+  return {
+    accessToken,
+  };
+};
+
 export const authService = {
   registerUser,
   loginUser,
+  refreshToken,
 };
