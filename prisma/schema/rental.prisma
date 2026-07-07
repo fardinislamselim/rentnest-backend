@@ -1,0 +1,26 @@
+// Rental requests submitted by Tenants for a Property
+
+model RentalRequest {
+    id String @id @default(uuid())
+
+    status RentalStatus @default(PENDING)
+
+    startDate DateTime
+    endDate   DateTime?
+
+    // Foreign keys
+    tenantId   String
+    propertyId String
+
+    // Relations
+    tenant   User     @relation("TenantRentals", fields: [tenantId], references: [id])
+    property Property @relation(fields: [propertyId], references: [id])
+    payment  Payment?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([tenantId])
+    @@index([propertyId])
+    @@map("rental_requests")
+}

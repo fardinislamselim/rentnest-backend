@@ -1,0 +1,22 @@
+// Tenant reviews for a Property (after a completed rental)
+
+model Review {
+  id String @id @default(uuid())
+
+  rating  Int
+  comment String
+
+  // Foreign keys
+  tenantId   String
+  propertyId String
+
+  // Relations
+  tenant   User     @relation(fields: [tenantId], references: [id])
+  property Property @relation(fields: [propertyId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([propertyId])
+  @@map("reviews")
+}

@@ -1,0 +1,14 @@
+// Property categories (Apartment, House, Studio, etc.)
+
+model Category {
+  id   String @id @default(uuid())
+  name String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  properties Property[]
+
+  @@map("categories")
+}

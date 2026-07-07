@@ -1,0 +1,24 @@
+// prisma/schema/payment.prisma
+// Payment transactions for an approved RentalRequest (Stripe / SSLCommerz)
+
+model Payment {
+    id String @id @default(uuid())
+
+    amount Float
+
+    provider PaymentProvider
+    transactionId String?
+    status PaymentStatus @default(PENDING)
+    paidAt DateTime?
+
+    // Foreign key (one-to-one with RentalRequest)
+    rentalRequestId String @unique
+
+    // Relations
+    rentalRequest RentalRequest @relation(fields: [rentalRequestId], references: [id])
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("payments")
+}
