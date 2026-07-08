@@ -4,6 +4,7 @@ import { CategoryRoutes } from "../modules/category/category.route";
 import { PropertyRoutes } from "../modules/property/property.route";
 import { RentalRoutes } from "../modules/rental/rental.route";
 import { UserRoutes } from "../modules/user/user.route";
+import { paymentRoutes } from "../modules/payment/payment.route";
 
 const router = Router();
 
@@ -27,6 +28,10 @@ const moduleRoutes = [
   {
     path: "/rentals",
     route: RentalRoutes,
+  },
+  {
+    path: "/payments",
+    route: paymentRoutes,
   },
 ];
 
