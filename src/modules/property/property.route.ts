@@ -23,6 +23,12 @@ router.post(
 router.get("/", propertyController.getAllProperties);
 
 router.get(
+  "/my-properties",
+  auth(Role.LANDLORD),
+  propertyController.getOwnProperties,
+);
+
+router.get(
   "/:id",
   validate(propertyIdValidationSchema),
   propertyController.getSingleProperty,
@@ -47,12 +53,6 @@ router.patch(
   auth(Role.LANDLORD),
   validate(updatePropertyStatusValidationSchema),
   propertyController.updatePropertyStatus,
-);
-
-router.get(
-  "/my-properties",
-  auth(Role.LANDLORD),
-  propertyController.getOwnProperties,
 );
 
 export const PropertyRoutes = router;
