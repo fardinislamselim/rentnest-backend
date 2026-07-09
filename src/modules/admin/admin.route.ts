@@ -57,4 +57,6 @@ router.get(
   adminController.getRentals,
 );
 
+router.get("/dashboard", auth(Role.ADMIN), adminController.getDashboard);
+
 export const AdminRoutes = router;

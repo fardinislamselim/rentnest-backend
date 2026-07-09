@@ -69,6 +69,45 @@ const deleteUser = async (userId: string) => {
   return null;
 };
 
+const getDashboard = async () => {
+  const [
+    totalUsers,
+    totalLandlords,
+    totalTenants,
+    totalProperties,
+    availableProperties,
+    rentedProperties,
+    totalRentals,
+    completedRentals,
+    revenueResult,
+  ] = await Promise.all([
+    prisma.user.count(),
+    prisma.user.count({ where: { role: "LANDLORD" } }),
+    prisma.user.count({ where: { role: "TENANT" } }),
+    prisma.property.count(),
+    prisma.property.count({ where: { status: "AVAILABLE" } }),
+    prisma.property.count({ where: { status: "RENTED" } }),
+    prisma.rentalRequest.count(),
+    prisma.rentalRequest.count({ where: { status: "COMPLETED" } }),
+    prisma.payment.aggregate({
+      _sum: { amount: true },
+      where: { status: "COMPLETED" },
+    }),
+  ]);
+
+  return {
+    totalUsers,
+    totalLandlords,
+    totalTenants,
+    totalProperties,
+    availableProperties,
+    rentedProperties,
+    totalRentals,
+    completedRentals,
+    totalRevenue: revenueResult._sum.amount ?? 0,
+  };
+};
+
 interface IGetAdminPropertiesQuery {
   page?: number | string;
   limit?: number | string;
@@ -236,4 +275,5 @@ export const adminService = {
   getProperties,
   deleteProperty,
   getRentals,
+  getDashboard,
 };

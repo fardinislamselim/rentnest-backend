@@ -110,6 +110,16 @@ const getRentals = catchAsync(async (req, res) => {
   });
 });
 
+const getDashboard = catchAsync(async (_req, res) => {
+  const result = await adminService.getDashboard();
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Admin dashboard retrieved successfully",
+    data: result,
+  });
+});
+
 export const adminController = {
   getUsers,
   getUserById,
@@ -118,4 +128,5 @@ export const adminController = {
   getProperties,
   deleteProperty,
   getRentals,
+  getDashboard,
 };
