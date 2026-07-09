@@ -30,7 +30,7 @@
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/your-username/rentnest-backend.git
+git clone https://github.com/fardinislamselim/rentnest-backend.git
 cd rentnest-backend
 
 # 2. Install dependencies
@@ -274,7 +274,7 @@ Category        ──< Property
 | --------------------------- | -------------------------------------------------- |
 | Live API                    | https://rentnest-backend-three.vercel.app/api/v1               |
 | API Documentation (Postman) | https://documenter.getpostman.com/view/49700440/2sBY4JxiKP#04aebb7b-fa16-403c-8c58-6f763b05c828 |
-| Postman Collection JESON                  | RentNest.postman_collection.json           |
+| Postman Collection (JSON)   | https://raw.githubusercontent.com/fardinislamselim/rentnest-backend/main/RentNest.postman_collection.json |
 
 ### Admin Credentials (for testing)
 
