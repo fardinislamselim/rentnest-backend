@@ -86,7 +86,7 @@ JWT_ACCESS_EXPIRES_IN=1d
 JWT_REFRESH_EXPIRES_IN=7d
 
 # Stripe Payment
-STRIPE_SECRET_KEY=sk_test_xxxxxxxxxxxxxxxxxxxxxxxx
+STRIPE_SECRET_KEY=your_stripe_secret_key
 STRIPE_CURRENCY=usd
 ```
 
