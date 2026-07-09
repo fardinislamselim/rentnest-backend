@@ -4,6 +4,9 @@ import auth from "../../middlewares/auth";
 import { validate } from "../../middlewares/validate";
 import { adminController } from "./admin.controller";
 import {
+  adminPropertyQuerySchema,
+  adminRentalQuerySchema,
+  propertyIdValidationSchema,
   updateUserStatusSchema,
   userIdValidationSchema,
 } from "./admin.validation";
@@ -31,6 +34,27 @@ router.delete(
   auth(Role.ADMIN),
   validate(userIdValidationSchema),
   adminController.deleteUser,
+);
+
+router.get(
+  "/properties",
+  auth(Role.ADMIN),
+  validate(adminPropertyQuerySchema),
+  adminController.getProperties,
+);
+
+router.delete(
+  "/properties/:id",
+  auth(Role.ADMIN),
+  validate(propertyIdValidationSchema),
+  adminController.deleteProperty,
+);
+
+router.get(
+  "/rentals",
+  auth(Role.ADMIN),
+  validate(adminRentalQuerySchema),
+  adminController.getRentals,
 );
 
 export const AdminRoutes = router;

@@ -55,9 +55,67 @@ const deleteUser = catchAsync(async (req, res) => {
   });
 });
 
+const getProperties = catchAsync(async (req, res) => {
+  const query = req.query as {
+    page?: number | string;
+    limit?: number | string;
+    status?: "AVAILABLE" | "RENTED" | "UNAVAILABLE";
+    location?: string;
+    categoryId?: string;
+    search?: string;
+    sortBy?: "price" | "createdAt" | "title" | "location";
+    sortOrder?: "asc" | "desc";
+  };
+
+  const result = await adminService.getProperties(query);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Properties retrieved successfully",
+    data: result.data,
+    meta: result.meta,
+  });
+});
+
+const deleteProperty = catchAsync(async (req, res) => {
+  const propertyId = Array.isArray(req.params.id)
+    ? req.params.id[0]
+    : req.params.id;
+  await adminService.deleteProperty(propertyId as string);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Property deleted",
+    data: null,
+  });
+});
+
+const getRentals = catchAsync(async (req, res) => {
+  const query = req.query as {
+    page?: number | string;
+    limit?: number | string;
+    status?: "PENDING" | "APPROVED" | "REJECTED" | "ACTIVE" | "COMPLETED";
+    search?: string;
+    sortBy?: "createdAt" | "startDate" | "endDate" | "status";
+    sortOrder?: "asc" | "desc";
+  };
+
+  const result = await adminService.getRentals(query);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Rentals retrieved successfully",
+    data: result.data,
+    meta: result.meta,
+  });
+});
+
 export const adminController = {
   getUsers,
   getUserById,
   updateUserStatus,
   deleteUser,
+  getProperties,
+  deleteProperty,
+  getRentals,
 };
