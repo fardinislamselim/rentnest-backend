@@ -26,7 +26,7 @@ const createPaymentIntent = async (
     });
 
     if (!rentalRequest) {
-      throw new AppError(404, "Rental request not found");
+      throw new AppError(httpStatus.NOT_FOUND, "Rental request not found");
     }
 
     if (rentalRequest.tenantId !== tenantId) {
@@ -132,15 +132,15 @@ const confirmPayment = async (
   });
 
   if (!payment) {
-    throw new AppError(404, "Payment not found");
+    throw new AppError(httpStatus.NOT_FOUND, "Payment not found");
   }
 
   if (payment.rentalRequest.tenantId !== tenantId) {
-    throw new AppError(403, "You are not allowed to confirm this payment");
+    throw new AppError(httpStatus.FORBIDDEN, "You are not allowed to confirm this payment");
   }
 
   if (payment.status === "COMPLETED") {
-    throw new AppError(409, "This payment has already been confirmed");
+    throw new AppError(httpStatus.CONFLICT, "This payment has already been confirmed");
   }
 
   const session = await stripe.checkout.sessions.retrieve(
@@ -154,7 +154,7 @@ const confirmPayment = async (
         data: { status: "FAILED" },
       });
       throw new AppError(
-        400,
+        httpStatus.BAD_REQUEST,
         "Payment session expired. Please start a new payment.",
       );
     }
@@ -208,7 +208,7 @@ const getPaymentById = async (tenantId: string, paymentId: string) => {
   });
 
   if (!payment) {
-    throw new AppError(404, "Payment not found");
+    throw new AppError(httpStatus.NOT_FOUND, "Payment not found");
   }
 
   if (payment.rentalRequest.tenantId !== tenantId) {
