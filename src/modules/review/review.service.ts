@@ -1,3 +1,5 @@
+import httpStatus from "http-status";
+
 import AppError from "../../errors/AppError";
 import { prisma } from "../../lib/prisma";
 import { ICreateReviewPayload, IUpdateReviewPayload } from "./review.interface";
@@ -51,11 +53,11 @@ const updateReview = async (
   });
 
   if (!review) {
-    throw new AppError(404, "Review not found");
+    throw new AppError(httpStatus.NOT_FOUND, "Review not found");
   }
 
   if (review.tenantId !== tenantId) {
-    throw new AppError(403, "You are not allowed to update this review");
+    throw new AppError(httpStatus.FORBIDDEN, "You are not allowed to update this review");
   }
 
   return prisma.review.update({
@@ -73,11 +75,11 @@ const deleteReview = async (tenantId: string, reviewId: string) => {
   });
 
   if (!review) {
-    throw new AppError(404, "Review not found");
+    throw new AppError(httpStatus.NOT_FOUND, "Review not found");
   }
 
   if (review.tenantId !== tenantId) {
-    throw new AppError(403, "You are not allowed to delete this review");
+    throw new AppError(httpStatus.FORBIDDEN, "You are not allowed to delete this review");
   }
 
   return prisma.review.delete({
