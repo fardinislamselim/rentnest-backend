@@ -5,7 +5,7 @@
 
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "target": "ES2023",
+    "target": "esnext",
 
     "types": ["node"],
 

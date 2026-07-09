@@ -22,7 +22,18 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.get("/", (req: Request, res: Response) => {
-  res.status(httpStatus.OK).json({ message: "RentNest Server is running" });
+  res.status(httpStatus.OK).json({
+    success: true,
+    message: "RentNest API is running 🚀",
+  });
+});
+
+
+app.get("/api/v1", (req: Request, res: Response) => {
+  res.status(httpStatus.OK).json({
+    success: true,
+    message: "RentNest API is running 🚀",
+  });
 });
 
 

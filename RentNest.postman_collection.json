@@ -1,0 +1,1439 @@
+{
+  "info": {
+    "_postman_id": "a46ec580-56de-48e8-864c-bcd94d93be64",
+    "name": "RentNest",
+    "description": "# RentNest Backend API\n\nRentNest is a RESTful backend API for a rental property marketplace.\n\nThe platform supports three roles:\n\n- Tenant\n    \n- Landlord\n    \n- Admin\n    \n\n## Features\n\n- JWT Authentication\n    \n- Role-based Authorization\n    \n- Property Management\n    \n- Rental Requests\n    \n- Stripe Payment Integration\n    \n- Reviews & Ratings\n    \n- Dashboard Analytics\n    \n- Search, Filter & Pagination\n    \n- Global Error Handling\n    \n- Input Validation using Zod\n    \n- Prisma ORM with PostgreSQL\n    \n\n## Authentication\n\nProtected endpoints require authentication using JWT stored in secure HTTP-only cookies.\n\n## Base URL\n\n[https://rentnest-backend-three.vercel.app/api/v1](https://rentnest-backend-three.vercel.app/api/v1)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "49700440"
+  },
+  "item": [
+    {
+      "name": "auth",
+      "item": [
+        {
+          "name": "register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{supabase_service_role_api_key_0sw5}}",
+                "type": "text",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Fardin Islam\",\r\n  \"email\": \"fardinislam3@example.com\",\r\n  \"password\": \"Password\",\r\n  \"phone\": \"+8801812345678\",\r\n  \"avatar\": \"https://i.pravatar.cc/300?img=25\",\r\n  \"bio\": \"Property owner with multiple rental apartments.\",\r\n  \"role\": \"LANDLORD\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
+            "description": "## Description\n\nRegisters a new user as a Tenant or Landlord.\n\n### Access\n\nPublic\n\n### Success Response\n\n- 201 Created — User registered successfully.\n    \n\n### Error Responses\n\n- 400 Bad Request — Validation failed.\n    \n- 409 Conflict — User already exists."
+          },
+          "response": []
+        },
+        {
+          "name": "login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"rakib.hasan@example.com\",\r\n  \"password\": \"Password@123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "## Description\n\nAuthenticates a user using email and password. On successful login, access and refresh tokens are stored in secure HTTP-only cookies.\n\n### Access\n\nPublic\n\n### Success Response\n\n- 200 OK — Login successful.\n    \n\n### Error Responses\n\n- 400 Bad Request — Validation failed.\n    \n- 401 Unauthorized — Invalid email or password.\n    \n- 403 Forbidden — User account is blocked.\n    \n- 404 Not Found — User not found."
+          },
+          "response": []
+        },
+        {
+          "name": "refresh-token",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/refresh-token",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "refresh-token"
+              ]
+            },
+            "description": "## Description\n\nGenerates a new access token using the refresh token stored in the HTTP-only cookie.\n\n### Access\n\nAuthenticated User\n\n### Success Response\n\n- 200 OK — Access token refreshed successfully.\n    \n\n### Error Responses\n\n- 401 Unauthorized — Refresh token missing.\n    \n- 403 Forbidden — Invalid or expired refresh token."
+          },
+          "response": []
+        },
+        {
+          "name": "Get own profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            },
+            "description": "## Description\n\nReturns the profile information of the currently authenticated user.\n\n### Access\n\nAuthenticated User\n\n### Success Response\n\n- 200 OK — Profile retrieved successfully.\n    \n\n### Error Responses\n\n- 401 Unauthorized — Authentication required.\n    \n- 404 Not Found — User not found."
+          },
+          "response": []
+        },
+        {
+          "name": "logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/logout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            },
+            "description": "## Description\n\nLogs out the authenticated user by clearing the access and refresh token cookies.\n\n### Access\n\nAuthenticated User\n\n### Success Response\n\n- 200 OK — Logged out successfully.\n    \n\n### Error Responses\n\n- 401 Unauthorized — Authentication required."
+          },
+          "response": []
+        },
+        {
+          "name": "change-password",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"oldPassword\": \"NewPassword@123\",\r\n  \"newPassword\": \"Password@123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/change-password",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "change-password"
+              ]
+            },
+            "description": "## Description\n\nAllows an authenticated user to change their account password.\n\n### Access\n\nAuthenticated User\n\n### Success Response\n\n- 200 OK — Password changed successfully.\n    \n\n### Error Responses\n\n- 400 Bad Request — Current password is incorrect.\n    \n- 401 Unauthorized — Authentication required.\n    \n- 422 Unprocessable Entity — Validation failed."
+          },
+          "response": []
+        }
+      ],
+      "description": "## Description\n\nAuthentication APIs handle user registration, login, logout, token refresh, password management, and profile retrieval.\n\nThese endpoints use JWT authentication with HTTP-only cookies to provide secure access to protected resources.\n\n### Access\n\n- Public\n    \n- Authenticated User"
+    },
+    {
+      "name": "user",
+      "item": [
+        {
+          "name": "Updet profile",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"John Doe\",\r\n  \"phone\": \"+8801712345678\",\r\n  \"bio\": \"Looking for a peaceful place to stay.\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/user/profile",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "profile"
+              ]
+            },
+            "description": "## Description\n\nUpdates the authenticated user's profile information such as name, phone number, avatar, and bio.\n\n### Access\n\nAuthenticated User\n\n### Success Response\n\n- 200 OK — Profile updated successfully.\n    \n\n### Error Responses\n\n- 400 Bad Request — Validation failed.\n    \n- 401 Unauthorized — Authentication required.\n    \n- 404 Not Found — User not found."
+          },
+          "response": []
+        },
+        {
+          "name": "Update profile picture",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"avatar\": \"https://example.com/images/avatar.jpg\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/user/profile/picture",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "profile",
+                "picture"
+              ]
+            },
+            "description": "# Update Profile Picture\n\n## Description\n\nUpdates the authenticated user's profile picture.\n\n### Access\n\nAuthenticated User\n\n### Success Response\n\n- 200 OK — Profile picture updated successfully.\n    \n\n### Error Responses\n\n- 400 Bad Request — Invalid image URL.\n    \n- 401 Unauthorized — Authentication required.\n    \n- 404 Not Found — User not found."
+          },
+          "response": []
+        }
+      ],
+      "description": "## Description\n\nUser APIs allow authenticated users to manage their personal profile, including updating profile information and profile picture.\n\n### Access\n\n- Authenticated User"
+    },
+    {
+      "name": "Category",
+      "item": [
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Office\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/categories",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories"
+              ]
+            },
+            "description": "## Description\n\nCreates a new property category.\n\n### Access\n\nAdmin\n\n### Success Response\n\n- 201 Created — Category created successfully.\n    \n\n### Error Responses\n\n- 400 Bad Request — Validation failed.\n    \n- 401 Unauthorized — Authentication required.\n    \n- 403 Forbidden — Admin access required.\n    \n- 409 Conflict — Category already exists."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/categories",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories"
+              ]
+            },
+            "description": "## Description\n\nRetrieves all available property categories.\n\n### Access\n\nPublic\n\n### Success Response\n\n- 200 OK — Categories retrieved successfully.\n    \n\n### Error Responses\n\n- 500 Internal Server Error."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Category",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/categories/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "a3f22600-8480-4cc2-bfda-9d74bbee46e8"
+                }
+              ]
+            },
+            "description": "## Description\n\nDeletes a property category.\n\n### Access\n\nAdmin\n\n### Success Response\n\n- 200 OK — Category deleted successfully.\n    \n\n### Error Responses\n\n- 401 Unauthorized.\n    \n- 403 Forbidden.\n    \n- 404 Not Found."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Luxury Apartment\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/categories/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "11d1b9e8-9b0c-4bdf-aeea-21d6f571faff"
+                }
+              ]
+            },
+            "description": "## Description\n\nUpdates an existing property category.\n\n### Access\n\nAdmin\n\n### Success Response\n\n- 200 OK — Category updated successfully.\n    \n\n### Error Responses\n\n- 400 Bad Request.\n    \n- 401 Unauthorized.\n    \n- 403 Forbidden.\n    \n- 404 Not Found."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Category",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/categories/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "11d1b9e8-9b0c-4bdf-aeea-21d6f571faff"
+                }
+              ]
+            },
+            "description": "## Description\n\nRetrieves details of a specific property category.\n\n### Access\n\nPublic\n\n### Success Response\n\n- 200 OK — Category retrieved successfully.\n    \n\n### Error Responses\n\n- 404 Not Found — Category not found."
+          },
+          "response": []
+        }
+      ],
+      "description": "## Description\n\nCategory APIs manage rental property categories such as Apartment, House, Studio, Villa, and Office.\n\nPublic users can browse categories, while only administrators can create, update, or delete categories.\n\n### Access\n\n- Public\n    \n- Admin"
+    },
+    {
+      "name": "🏡 Property",
+      "item": [
+        {
+          "name": "Create Property",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"title\": \"Elegant Villa\",\r\n  \"description\": \"Beautiful villa with swimming pool and garden.\",\r\n  \"location\": \"Sylhet\",\r\n  \"price\": 95000,\r\n  \"bedrooms\": 6,\r\n  \"bathrooms\": 5,\r\n  \"size\": 4500,\r\n  \"images\": [\r\n    \"https://images.unsplash.com/photo-1600585154526-990dced4db0d\",\r\n    \"https://images.unsplash.com/photo-1600607687939-ce8a6c25118c\"\r\n  ],\r\n  \"categoryId\": \"cd573664-6949-4a0b-996a-7f7aa94bc5a0\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/properties",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "properties"
+              ]
+            },
+            "description": "## Description\n\nCreates a new rental property listing.\n\n### Access\n\nLandlord\n\n### Success Response\n\n- 201 Created — Property created successfully.\n    \n\n### Error Responses\n\n- 400 Bad Request.\n    \n- 401 Unauthorized.\n    \n- 403 Forbidden."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Properties",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/properties",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "properties"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "Chattogram",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "categoryId",
+                  "value": "9cd93269-44f3-4323-b3b7-def8ef40851b",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "minPrice",
+                  "value": "10000",
+                  "disabled": true
+                },
+                {
+                  "key": "maxPrice",
+                  "value": "30000",
+                  "disabled": true
+                },
+                {
+                  "key": "bedrooms",
+                  "value": "3",
+                  "disabled": true
+                },
+                {
+                  "key": "sortBy",
+                  "value": "price",
+                  "disabled": true
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "asc",
+                  "disabled": true
+                },
+                {
+                  "key": "sortBy",
+                  "value": "createdAt",
+                  "disabled": true
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "desc",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "## Description\n\nRetrieves all available properties with support for search, filtering, sorting, and pagination.\n\n### Access\n\nPublic\n\n### Success Response\n\n- 200 OK — Properties retrieved successfully.\n    \n\n### Error Responses\n\n- 500 Internal Server Error."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Property",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/properties/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "properties",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "59caed6a-b3c2-48dd-b284-fcb7947306c5"
+                }
+              ]
+            },
+            "description": "## Description\n\nRetrieves detailed information about a property.\n\n### Access\n\nPublic\n\n### Success Response\n\n- 200 OK — Property retrieved successfully.\n    \n\n### Error Responses\n\n- 404 Not Found."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Property",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"title\": \"Luxury Apartment Updated\",\r\n  \"price\": 28000,\r\n  \"bedrooms\": 4,\r\n  \"bathrooms\": 3\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/properties/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "properties",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "59caed6a-b3c2-48dd-b284-fcb7947306c5"
+                }
+              ]
+            },
+            "description": "## Description\n\nUpdates an existing property listing.\n\n### Access\n\nLandlord (Owner Only)\n\n### Success Response\n\n- 200 OK — Property updated successfully.\n    \n\n### Error Responses\n\n- 400 Bad Request.\n    \n- 401 Unauthorized.\n    \n- 403 Forbidden.\n    \n- 404 Not Found."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Property Status",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"status\": \"RENTED\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/properties/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "properties",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "59caed6a-b3c2-48dd-b284-fcb7947306c5/status"
+                }
+              ]
+            },
+            "description": "## Description\n\nUpdates the availability status of a property.\n\n### Access\n\nLandlord (Owner Only)\n\n### Success Response\n\n- 200 OK — Property status updated successfully.\n    \n\n### Error Responses\n\n- 401 Unauthorized.\n    \n- 403 Forbidden.\n    \n- 404 Not Found."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Property",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/properties/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "properties",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1b876154-3a93-4b9a-acee-456afe92b019"
+                }
+              ]
+            },
+            "description": "## Description\n\nDeletes a property listing.\n\n### Access\n\nLandlord (Owner Only)\n\n### Success Response\n\n- 200 OK — Property deleted successfully.\n    \n\n### Error Responses\n\n- 401 Unauthorized.\n    \n- 403 Forbidden.\n    \n- 404 Not Found."
+          },
+          "response": []
+        },
+        {
+          "name": "My Properties",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/properties/my-properties",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "properties",
+                "my-properties"
+              ]
+            },
+            "description": "## Description\n\nRetrieves all properties created by the authenticated landlord.\n\n### Access\n\nLandlord\n\n### Success Response\n\n- 200 OK — Properties retrieved successfully.\n    \n\n### Error Responses\n\n- 401 Unauthorized."
+          },
+          "response": []
+        }
+      ],
+      "description": "## Description\n\nProperty APIs manage rental property listings.\n\nPublic users can browse available properties with search, filtering, sorting, and pagination.\n\nLandlords can create, update, delete, and manage their own property listings.\n\n### Access\n\n- Public\n    \n- Landlord"
+    },
+    {
+      "name": "🏠 Rental Request",
+      "item": [
+        {
+          "name": "Submit Rental Request",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"propertyId\": \"56b45597-83f6-4d3b-8f92-51080c9d765f\",\r\n  \"startDate\": \"2026-09-15T00:00:00.000Z\",\r\n  \"endDate\": \"2027-03-15T00:00:00.000Z\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/rentals",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "rentals"
+              ]
+            },
+            "description": "## Description\n\nSubmits a rental request for an available property. A tenant cannot request their own property or submit duplicate pending requests.\n\n### Access\n\nTenant\n\n### Success Response\n\n- 201 Created — Rental request submitted successfully.\n    \n\n### Error Responses\n\n- 400 Bad Request — Validation failed.\n    \n- 401 Unauthorized — Authentication required.\n    \n- 403 Forbidden — You cannot request your own property.\n    \n- 404 Not Found — Property not found.\n    \n- 409 Conflict — Rental request already exists."
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel Rental Request",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{base_url}}/rentals/:id/cancel",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "rentals",
+                ":id",
+                "cancel"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "0b7d6e80-cb76-4499-836f-32de25b72bfe"
+                }
+              ]
+            },
+            "description": "## Description\n\nCancels a pending rental request submitted by the authenticated tenant.\n\n### Access\n\nTenant\n\n### Success Response\n\n- 200 OK — Rental request cancelled successfully.\n    \n\n### Error Responses\n\n- 401 Unauthorized — Authentication required.\n    \n- 403 Forbidden — You are not allowed to cancel this request.\n    \n- 404 Not Found — Rental request not found."
+          },
+          "response": []
+        },
+        {
+          "name": "Approve Rental Request",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{base_url}}/rentals/:id/approve",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "rentals",
+                ":id",
+                "approve"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "bae8b21b-cdfa-41b3-bd79-0e02c8a3731a"
+                }
+              ]
+            },
+            "description": "# Approve Rental Request\n\n## Description\n\nApproves a rental request for a property owned by the authenticated landlord.\n\n### Access\n\nLandlord\n\n### Success Response\n\n- 200 OK — Rental request approved successfully.\n    \n\n### Error Responses\n\n- 401 Unauthorized — Authentication required.\n    \n- 403 Forbidden — You are not the owner of this property.\n    \n- 404 Not Found — Rental request not found."
+          },
+          "response": []
+        },
+        {
+          "name": "Reject Rental Request",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{base_url}}/rentals/:id/reject",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "rentals",
+                ":id",
+                "reject"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "3b4f7fda-6a41-486e-baa3-54178270c71d"
+                }
+              ]
+            },
+            "description": "# Description\n\nRejects a rental request for a property owned by the authenticated landlord.\n\n### Access\n\nLandlord\n\n### Success Response\n\n- 200 OK — Rental request rejected successfully.\n    \n\n### Error Responses\n\n- 401 Unauthorized — Authentication required.\n    \n- 403 Forbidden — You are not the owner of this property.\n    \n- 404 Not Found — Rental request not found."
+          },
+          "response": []
+        },
+        {
+          "name": "Rental Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/rentals/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "rentals",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "3b4f7fda-6a41-486e-baa3-54178270c71d"
+                }
+              ]
+            },
+            "description": "# Rental Details\n\n## Description\n\nRetrieves detailed information about a specific rental request.\n\n### Access\n\nTenant (Own), Landlord (Own Property), Admin\n\n### Success Response\n\n- 200 OK — Rental details retrieved successfully.\n    \n\n### Error Responses\n\n- 401 Unauthorized — Authentication required.\n    \n- 403 Forbidden — Access denied.\n    \n- 404 Not Found — Rental request not found."
+          },
+          "response": []
+        },
+        {
+          "name": "My Rentals",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/rentals/my-rentals",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "rentals",
+                "my-rentals"
+              ]
+            },
+            "description": "# Description\n\nRetrieves all rental requests submitted by the authenticated tenant.\n\n### Access\n\nTenant\n\n### Success Response\n\n- 200 OK — Rental requests retrieved successfully.\n    \n\n### Error Responses\n\n- 401 Unauthorized — Authentication required."
+          },
+          "response": []
+        },
+        {
+          "name": "Landlord Requests",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/rentals/requests",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "rentals",
+                "requests"
+              ]
+            },
+            "description": "## Description\n\nRetrieves all rental requests for properties owned by the authenticated landlord.\n\n### Access\n\nLandlord\n\n### Success Response\n\n- 200 OK — Rental requests retrieved successfully.\n    \n\n### Error Responses\n\n- 401 Unauthorized — Authentication required."
+          },
+          "response": []
+        },
+        {
+          "name": "Rental History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/rentals/history",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "rentals",
+                "history"
+              ]
+            },
+            "description": "# Description\n\nRetrieves the rental history for properties owned by the authenticated landlord.\n\n### Access\n\nLandlord\n\n### Success Response\n\n- 200 OK — Rental history retrieved successfully.\n    \n\n### Error Responses\n\n- 401 Unauthorized — Authentication required."
+          },
+          "response": []
+        }
+      ],
+      "description": "## Description\n\nRental Request APIs allow tenants to submit rental requests for available properties.\n\nLandlords can review incoming requests and approve or reject them.\n\nBusiness rules ensure tenants cannot rent their own properties or submit duplicate pending requests.\n\n### Access\n\n- Tenant\n    \n- Landlord\n    \n- Admin (Read Only)"
+    },
+    {
+      "name": "💸Payment",
+      "item": [
+        {
+          "name": "create-intent",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"rentalRequestId\": \"1e339df4-8f5c-40ee-a893-242d8ae049dd\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/payments/create-intent",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "payments",
+                "create-intent"
+              ]
+            },
+            "description": "## Description\n\nCreates a Stripe Checkout Session for an approved rental request.\n\n### Access\n\nTenant\n\n### Success Response\n\n- 201 Created — Payment session created successfully.\n    \n\n### Error Responses\n\n- 400 Bad Request — Rental request is not approved.\n    \n- 401 Unauthorized — Authentication required.\n    \n- 404 Not Found — Rental request not found."
+          },
+          "response": []
+        },
+        {
+          "name": "Confirm Payment",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"paymentId\": \"30631f74-3c10-47f7-94ad-a3830ae90b40\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/payments/confirm",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "payments",
+                "confirm"
+              ]
+            },
+            "description": "# Description\n\nVerifies the Stripe payment and updates the payment, rental, and property status.\n\n### Access\n\nTenant\n\n### Success Response\n\n- 200 OK — Payment confirmed successfully.\n    \n\n### Error Responses\n\n- 400 Bad Request — Payment verification failed.\n    \n- 401 Unauthorized — Authentication required.\n    \n- 404 Not Found — Payment not found."
+          },
+          "response": []
+        },
+        {
+          "name": "My Payments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/payments/my-payments",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "payments",
+                "my-payments"
+              ]
+            },
+            "description": "# Description\n\nRetrieves the payment history of the authenticated tenant.\n\n### Access\n\nTenant\n\n### Success Response\n\n- 200 OK — Payment history retrieved successfully.\n    \n\n### Error Responses\n\n- 401 Unauthorized — Authentication required."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Payment Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/payments/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "payments",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "3cecc2f2-9494-44df-addf-b35c6728e4c2"
+                }
+              ]
+            },
+            "description": "# Description\n\nRetrieves detailed information about a specific payment.\n\n### Access\n\nTenant\n\n### Success Response\n\n- 200 OK — Payment details retrieved successfully.\n    \n\n### Error Responses\n\n- 401 Unauthorized — Authentication required.\n    \n- 404 Not Found — Payment not found."
+          },
+          "response": []
+        }
+      ],
+      "description": "## Description\n\nPayment APIs integrate Stripe to securely process rental payments.\n\nTenants can create payment sessions, verify successful payments, and view their payment history.\n\nPayment completion automatically updates rental and property statuses.\n\n### Access\n\n- Tenant"
+    },
+    {
+      "name": "⭐ Review",
+      "item": [
+        {
+          "name": "Create Review",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"propertyId\": \"a860bddd-e4ec-4cc0-abea-340f88669260\",\r\n  \"rating\": 5,\r\n  \"comment\": \"Excellent apartment with modern facilities. The landlord was very cooperative.\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/reviews",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reviews"
+              ]
+            },
+            "description": "# Description\n\nCreates a review for a completed rental property.\n\n### Access\n\nTenant\n\n### Success Response\n\n- 201 Created — Review created successfully.\n    \n\n### Error Responses\n\n- 400 Bad Request — Validation failed.\n    \n- 401 Unauthorized — Authentication required.\n    \n- 403 Forbidden — Rental not completed.\n    \n- 409 Conflict — Review already exists."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Property Reviews",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/reviews/properties/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reviews",
+                "properties",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "a860bddd-e4ec-4cc0-abea-340f88669260"
+                }
+              ]
+            },
+            "description": "## Description\n\nRetrieves all reviews for a specific property.\n\n### Access\n\nPublic\n\n### Success Response\n\n- 200 OK — Reviews retrieved successfully.\n    \n\n### Error Responses\n\n- 404 Not Found — Property not found."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Review",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"rating\": 4,\r\n  \"comment\": \"After staying for several months, I found the apartment very comfortable and secure.\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/reviews/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reviews",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "2004cc78-e92a-4d4c-b0ff-e9f7b68e1b3f"
+                }
+              ]
+            },
+            "description": "# Description\n\nUpdates a review created by the authenticated tenant.\n\n### Access\n\nTenant\n\n### Success Response\n\n- 200 OK — Review updated successfully.\n    \n\n### Error Responses\n\n- 401 Unauthorized — Authentication required.\n    \n- 403 Forbidden — You are not the owner of this review.\n    \n- 404 Not Found — Review not found."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Review",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/reviews/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reviews",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "2004cc78-e92a-4d4c-b0ff-e9f7b68e1b3f"
+                }
+              ]
+            },
+            "description": "# Delete Review\n\n## Description\n\nDeletes a review created by the authenticated tenant.\n\n### Access\n\nTenant\n\n### Success Response\n\n- 200 OK — Review deleted successfully.\n    \n\n### Error Responses\n\n- 401 Unauthorized — Authentication required.\n    \n- 403 Forbidden — You are not the owner of this review.\n    \n- 404 Not Found — Review not found."
+          },
+          "response": []
+        }
+      ],
+      "description": "## Description\n\nReview APIs allow tenants to share their experience after successfully completing a rental.\n\nEach tenant can submit one review per completed rental.\n\nProperty reviews are publicly accessible.\n\n### Access\n\n- Public\n    \n- Tenant"
+    },
+    {
+      "name": "👑 Admin",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "users"
+              ]
+            },
+            "description": "# Description\n\nRetrieves a paginated list of all registered users.\n\n### Access\n\nAdmin\n\n### Success Response\n\n- 200 OK — Users retrieved successfully.\n    \n\n### Error Responses\n\n- 401 Unauthorized.\n    \n- 403 Forbidden."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/users/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "229b0008-adfb-4949-8595-0590a0fba651"
+                }
+              ]
+            },
+            "description": "# Description\n\nRetrieves detailed information about a specific user.\n\n### Access\n\nAdmin\n\n### Success Response\n\n- 200 OK — User retrieved successfully.\n    \n\n### Error Responses\n\n- 401 Unauthorized.\n    \n- 403 Forbidden.\n    \n- 404 Not Found."
+          },
+          "response": []
+        },
+        {
+          "name": "Update User Status",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"status\": \"ACTIVE\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/users/:id/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                ":id",
+                "status"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "229b0008-adfb-4949-8595-0590a0fba651"
+                }
+              ]
+            },
+            "description": "# Description\n\nUpdates the account status of a user (ACTIVE or BLOCKED).\n\n### Access\n\nAdmin\n\n### Success Response\n\n- 200 OK — User status updated successfully.\n    \n\n### Error Responses\n\n- 401 Unauthorized.\n    \n- 403 Forbidden.\n    \n- 404 Not Found."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/users/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "229b0008-adfb-4949-8595-0590a0fba651"
+                }
+              ]
+            },
+            "description": "# Description\n\nDeletes a user account from the system.\n\n### Access\n\nAdmin\n\n### Success Response\n\n- 200 OK — User deleted successfully.\n    \n\n### Error Responses\n\n- 401 Unauthorized.\n    \n- 403 Forbidden.\n    \n- 404 Not Found."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Rentals",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/rentals",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "rentals"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "2",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "PENDING",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "APPROVED",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "ACTIVE",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "COMPLETED",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "fardin",
+                  "disabled": true
+                },
+                {
+                  "key": "sortBy",
+                  "value": "createdAt",
+                  "disabled": true
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "desc",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "# Description\n\nRetrieves all rental requests in the system.\n\n### Access\n\nAdmin\n\n### Success Response\n\n- 200 OK — Rental requests retrieved successfully.\n    \n\n### Error Responses\n\n- 401 Unauthorized.\n    \n- 403 Forbidden."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Properties",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/properties",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "properties"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "5",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "AVAILABLE",
+                  "disabled": true
+                },
+                {
+                  "key": "location",
+                  "value": "Dhaka",
+                  "disabled": true
+                },
+                {
+                  "key": "categoryId",
+                  "value": "9cd93269-44f3-4323-b3b7-def8ef40851b",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "Apartment",
+                  "disabled": true
+                },
+                {
+                  "key": "sortBy",
+                  "value": "price",
+                  "disabled": true
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "asc",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "# Description\n\nRetrieves all property listings in the system.\n\n### Access\n\nAdmin\n\n### Success Response\n\n- 200 OK — Properties retrieved successfully.\n    \n\n### Error Responses\n\n- 401 Unauthorized.\n    \n- 403 Forbidden."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Property",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/properties/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "properties",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "a737c329-9a45-488f-ae3e-13d995f584a8"
+                }
+              ]
+            },
+            "description": "# Description\n\nDeletes any property from the system.\n\n### Access\n\nAdmin\n\n### Success Response\n\n- 200 OK — Property deleted successfully.\n    \n\n### Error Responses\n\n- 401 Unauthorized.\n    \n- 403 Forbidden.\n    \n- 404 Not Found."
+          },
+          "response": []
+        }
+      ],
+      "description": "## Description\n\nAdmin APIs provide complete platform management capabilities.\n\nAdministrators can manage users, properties, rental requests, and monitor platform activities.\n\nThese endpoints are restricted to users with the ADMIN role.\n\n### Access\n\n- Admin"
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "👑 Admin Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/api/v1/admin/dashboard",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "dashboard"
+              ]
+            },
+            "description": "# Description\n\nRetrieves platform statistics including users, properties, rentals, and total revenue.\n\n### Access\n\nAdmin\n\n### Success Response\n\n- 200 OK — Dashboard statistics retrieved successfully.\n    \n\n### Error Responses\n\n- 401 Unauthorized.\n    \n- 403 Forbidden."
+          },
+          "response": []
+        },
+        {
+          "name": "🏠 Landlord Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/api/v1/landlord/dashboard",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "api",
+                "v1",
+                "landlord",
+                "dashboard"
+              ]
+            },
+            "description": "# Description\n\nRetrieves property statistics, rental requests, and total income for the authenticated landlord.\n\n### Access\n\nLandlord\n\n### Success Response\n\n- 200 OK — Dashboard statistics retrieved successfully.\n    \n\n### Error Responses\n\n- 401 Unauthorized.\n    \n- 403 Forbidden."
+          },
+          "response": []
+        },
+        {
+          "name": "👤 Tenant Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/api/v1/tenant/dashboard",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "api",
+                "v1",
+                "tenant",
+                "dashboard"
+              ]
+            },
+            "description": "# Tenant Dashboard\n\n## Description\n\nRetrieves rental and payment statistics for the authenticated tenant.\n\n### Access\n\nTenant\n\n### Success Response\n\n- 200 OK — Dashboard statistics retrieved successfully.\n    \n\n### Error Responses\n\n- 401 Unauthorized.\n    \n- 403 Forbidden."
+          },
+          "response": []
+        }
+      ],
+      "description": "## Description\n\nDashboard APIs provide real-time statistical information for different user roles.\n\nAdmin Dashboard includes platform-wide analytics.\n\nLandlord Dashboard summarizes property and rental performance.\n\nTenant Dashboard provides rental and payment summaries.\n\n### Access\n\n- Admin\n    \n- Landlord\n    \n- Tenant"
+    },
+    {
+      "name": "RentNest",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://rentnest-backend-three.vercel.app",
+          "protocol": "https",
+          "host": [
+            "rentnest-backend-three",
+            "vercel",
+            "app"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": ""
+    }
+  ]
+}
