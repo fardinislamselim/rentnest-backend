@@ -41,7 +41,13 @@ app.get("/api/v1", (req: Request, res: Response) => {
 
 
 // swagger
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    explorer: true,
+  }),
+);
 
 
 

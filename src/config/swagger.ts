@@ -41,7 +41,7 @@ A RESTful backend API for a rental property marketplace.
         description: "Local Development",
       },
       {
-        url: "https://rentnest-backend-three.vercel.app/api/v1",
+        url: "https://rentnest-backend-83n7.onrender.com/api/v1",
         description: "Production Server",
       },
     ],

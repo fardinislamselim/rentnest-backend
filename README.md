@@ -111,7 +111,7 @@ STRIPE_CURRENCY=usd
 
 ### Base URL
 
-#### Live API : https://rentnest-backend-three.vercel.app/api/v1
+#### Live API : https://rentnest-backend-83n7.onrender.com/api/v1
 
 #### Local Development : http://localhost:5000/api/v1
 
@@ -272,9 +272,9 @@ Category        ──< Property
 
 | Resource                    | URL                                                |
 | --------------------------- | -------------------------------------------------- |
-| Live API                    | https://rentnest-backend-three.vercel.app/api/v1               |
-| API Documentation (Postman) | https://documenter.getpostman.com/view/49700440/2sBY4JxiKP#04aebb7b-fa16-403c-8c58-6f763b05c828 |
-| Postman Collection (JSON)   | [Postman Collection](https://github.com/fardinislamselim/rentnest-backend/blob/main/RentNest.postman_collection.json) |
+| Live API                    | https://rentnest-backend-83n7.onrender.com/api/v1  |
+| API Documentation           | https://rentnest-backend-83n7.onrender.com/api-docs/                                                                          |
+| Postman Collection (JSON)   | [Postman Collection](https://github.com/fardinislamselim/rentnest-backend/blob/main/RentNest.postman_collection.json)                       |
 
 ### Admin Credentials (for testing)
 
