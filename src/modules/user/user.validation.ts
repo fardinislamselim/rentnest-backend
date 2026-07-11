@@ -13,3 +13,9 @@ export const updateProfilePictureValidationSchema = z.object({
     avatar: z.string().url("Avatar must be a valid URL"),
   }),
 });
+
+export const userIdValidationSchema = z.object({
+  params: z.object({
+    id: z.uuid(),
+  }),
+});

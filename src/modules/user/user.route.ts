@@ -6,6 +6,7 @@ import { userController } from "./user.controller";
 import {
   updateProfilePictureValidationSchema,
   updateProfileValidationSchema,
+  userIdValidationSchema,
 } from "./user.validation";
 
 const router = Router();
@@ -91,6 +92,34 @@ router.patch(
   auth(),
   validate(updateProfilePictureValidationSchema),
   userController.updateProfilePicture,
+);
+
+/**
+ * @swagger
+ * /user/{id}:
+ *   get:
+ *     summary: Get public user profile
+ *     description: Retrieve a user's public profile by ID.
+ *     tags:
+ *       - Users
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: User ID
+ *     responses:
+ *       200:
+ *         description: Public profile retrieved successfully.
+ *       404:
+ *         description: User not found.
+ */
+router.get(
+  "/:id",
+  validate(userIdValidationSchema),
+  userController.getPublicProfile,
 );
 
 export const UserRoutes = router;

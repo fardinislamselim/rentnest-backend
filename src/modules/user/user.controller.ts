@@ -4,16 +4,6 @@ import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import { userService } from "./user.service";
 
-const getOwnProfile = catchAsync(async (req, res) => {
-  const result = await userService.getOwnProfile(req.user.userId);
-
-  sendResponse(res, {
-    success: true,
-    statusCode: httpStatus.OK,
-    message: "Profile retrieved successfully",
-    data: result,
-  });
-});
 
 const updateProfile = catchAsync(async (req, res) => {
   const result = await userService.updateProfile(req.user.userId, req.body);
@@ -40,8 +30,20 @@ const updateProfilePicture = catchAsync(async (req, res) => {
   });
 });
 
+const getPublicProfile = catchAsync(async (req, res) => {
+  const result = await userService.getPublicProfile(req.params.id as string);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User profile retrieved successfully",
+    data: result,
+  });
+});
+
+
 export const userController = {
-  getOwnProfile,
   updateProfile,
   updateProfilePicture,
+  getPublicProfile,
 };

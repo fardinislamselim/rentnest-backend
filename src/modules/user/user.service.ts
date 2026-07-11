@@ -4,22 +4,6 @@ import AppError from "../../errors/AppError";
 import { prisma } from "../../lib/prisma";
 import { IUpdateProfile, IUpdateProfilePicture } from "./user.interface";
 
-const getOwnProfile = async (userId: string) => {
-  const user = await prisma.user.findUnique({
-    where: {
-      id: userId,
-    },
-    omit: {
-      password: true,
-    },
-  });
-
-  if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, "User not found");
-  }
-
-  return user;
-};
 
 const updateProfile = async (userId: string, payload: IUpdateProfile) => {
   const user = await prisma.user.findUnique({
@@ -74,8 +58,25 @@ const updateProfilePicture = async (
   return updatedUser;
 };
 
+const getPublicProfile = async (id: string) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id,
+    },
+    omit: {
+      password: true,
+    }
+  });
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  return user;
+};
+
 export const userService = {
-  getOwnProfile,
   updateProfile,
   updateProfilePicture,
+  getPublicProfile,
 };
