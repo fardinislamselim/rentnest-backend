@@ -68,6 +68,21 @@ const createPaymentIntent = async (
 
     const amount = rentalRequest.property.price;
 
+    const payment = rentalRequest.payment
+      ? await tx.payment.update({
+          where: { id: rentalRequest.payment.id },
+          data: { transactionId: "", status: "PENDING" },
+        })
+      : await tx.payment.create({
+          data: {
+            rentalRequestId: rentalRequest.id,
+            amount,
+            provider: "STRIPE",
+            transactionId: "",
+            status: "PENDING",
+          },
+        });
+
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
@@ -86,8 +101,8 @@ const createPaymentIntent = async (
         },
       ],
 
-      success_url: `${config.app_url}/api/v1/payments/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${config.app_url}/api/v1/payments/cancel`,
+      success_url: `${config.app_url}/payment/success?session_id={CHECKOUT_SESSION_ID}&payment_id=${payment.id}`,
+      cancel_url: `${config.app_url}/payment/cancel`,
       metadata: {
         rentalRequestId: rentalRequest.id,
         tenantId,
@@ -95,20 +110,10 @@ const createPaymentIntent = async (
       },
     });
 
-    const payment = rentalRequest.payment
-      ? await tx.payment.update({
-          where: { id: rentalRequest.payment.id },
-          data: { transactionId: session.id, status: "PENDING" },
-        })
-      : await tx.payment.create({
-          data: {
-            rentalRequestId: rentalRequest.id,
-            amount,
-            provider: "STRIPE",
-            transactionId: session.id,
-            status: "PENDING",
-          },
-        });
+    await tx.payment.update({
+      where: { id: payment.id },
+      data: { transactionId: session.id },
+    });
 
     return {
       paymentId: payment.id,
